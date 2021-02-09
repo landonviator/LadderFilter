@@ -53,18 +53,19 @@ public:
 
 private:
     
-    juce::Slider driveSlider, cutoffSlider, resoSlider;
+    juce::Slider driveSlider, cutoffSlider, resoSlider, trimSlider;
     std::vector<juce::Slider*> sliders;
-    std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> driveSliderAttach, cutoffSliderAttach, resoSliderAttach;
+    std::unique_ptr <juce::AudioProcessorValueTreeState::SliderAttachment> driveSliderAttach, cutoffSliderAttach, resoSliderAttach, trimSliderAttach;
             
     juce::GroupComponent windowBorder;
             
-    juce::Label driveLabel, cutoffLabel, resoLabel;
+    juce::Label driveLabel, cutoffLabel, resoLabel, trimLabel;
     std::vector<juce::Label*> labels;
             
     std::string driveLabelText = "Drive";
     std::string cutoffLabelText = "Cutoff";
     std::string resoLabelText = "Resonance";
+    std::string trimLabelText = "Trim";
     std::vector<std::string> labelTexts;
             
     ViatorDial customDial;

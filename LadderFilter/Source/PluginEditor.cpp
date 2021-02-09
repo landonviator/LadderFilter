@@ -17,19 +17,19 @@ LadderFilterAudioProcessorEditor::LadderFilterAudioProcessorEditor (LadderFilter
     shadowProperties.offset = juce::Point<int> (-1, 3);
     dialShadow.setShadowProperties (shadowProperties);
             
-    sliders.reserve(3);
+    sliders.reserve(4);
     sliders = {
-        &driveSlider, &cutoffSlider, &resoSlider
+        &driveSlider, &cutoffSlider, &resoSlider, &trimSlider
     };
             
-    labels.reserve(3);
+    labels.reserve(4);
     labels = {
-        &driveLabel, &cutoffLabel, &resoLabel
+        &driveLabel, &cutoffLabel, &resoLabel, &trimLabel
     };
                 
-    labelTexts.reserve(3);
+    labelTexts.reserve(4);
     labelTexts = {
-        driveLabelText, cutoffLabelText, resoLabelText
+        driveLabelText, cutoffLabelText, resoLabelText, trimLabelText
     };
     
     for (auto i = 0; i < sliders.size(); i++) {
@@ -47,14 +47,17 @@ LadderFilterAudioProcessorEditor::LadderFilterAudioProcessorEditor (LadderFilter
     driveSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, driveSliderId, driveSlider);
     resoSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, resoDelaySliderId, resoSlider);
     cutoffSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, cutoffSliderId, cutoffSlider);
+    trimSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, trimSliderId, trimSlider);
     
-    driveSlider.setRange(1, 10, 0.25);
+    driveSlider.setRange(0, 10, 0.25);
     driveSlider.setTextValueSuffix(" dB");
     cutoffSlider.setRange(20, 20000, 1);
     cutoffSlider.setTextValueSuffix(" Hz");
     cutoffSlider.setSkewFactorFromMidPoint(750);
     resoSlider.setRange(0, 1, 0.025);
     resoSlider.setTextValueSuffix(" dB");
+    trimSlider.setRange(-36.0, 36.0);
+    trimSlider.setTextValueSuffix(" dB");
     
     
     for (auto i = 0; i < labels.size(); i++) {
@@ -103,10 +106,10 @@ void LadderFilterAudioProcessorEditor::resized()
        flexboxColumnOne.alignContent = juce::FlexBox::AlignContent::stretch;
 
        juce::Array<juce::FlexItem> itemArrayColumnOne;
-       itemArrayColumnOne.add(juce::FlexItem(bounds.getWidth() / 3, bounds.getHeight() / 2, driveSlider).withMargin(juce::FlexItem::Margin(bounds.getHeight() * .30, 0, 0, 0)));
+       itemArrayColumnOne.add(juce::FlexItem(bounds.getWidth() / 6, bounds.getHeight() / 2, driveSlider).withMargin(juce::FlexItem::Margin(bounds.getHeight() * .30, 0, 0, 0)));
 
        flexboxColumnOne.items = itemArrayColumnOne;
-       flexboxColumnOne.performLayout(bounds.removeFromLeft(bounds.getWidth() / 3));
+       flexboxColumnOne.performLayout(bounds.removeFromLeft(bounds.getWidth() / 4));
        /* ============================================================================ */
 
        //second column of gui
@@ -116,10 +119,10 @@ void LadderFilterAudioProcessorEditor::resized()
        flexboxColumnTwo.alignContent = juce::FlexBox::AlignContent::stretch;
 
        juce::Array<juce::FlexItem> itemArrayColumnTwo;
-       itemArrayColumnTwo.add(juce::FlexItem(bounds.getWidth() / 3, bounds.getHeight() / 2, cutoffSlider).withMargin(juce::FlexItem::Margin(bounds.getHeight() * .30, 0, 0, 0)));
+       itemArrayColumnTwo.add(juce::FlexItem(bounds.getWidth() / 6, bounds.getHeight() / 2, cutoffSlider).withMargin(juce::FlexItem::Margin(bounds.getHeight() * .30, 0, 0, 0)));
 
        flexboxColumnTwo.items = itemArrayColumnTwo;
-       flexboxColumnTwo.performLayout(bounds.removeFromLeft(bounds.getWidth() / 2));
+       flexboxColumnTwo.performLayout(bounds.removeFromLeft(bounds.getWidth() / 3));
        /* ============================================================================ */
 
        //third column of gui
@@ -129,11 +132,24 @@ void LadderFilterAudioProcessorEditor::resized()
        flexboxColumnThree.alignContent = juce::FlexBox::AlignContent::stretch;
 
        juce::Array<juce::FlexItem> itemArrayColumnThree;
-       itemArrayColumnThree.add(juce::FlexItem(bounds.getWidth() / 3, bounds.getHeight() / 2, resoSlider).withMargin(juce::FlexItem::Margin(bounds.getHeight() * .30, 0, 0, 0)));
+       itemArrayColumnThree.add(juce::FlexItem(bounds.getWidth() / 6, bounds.getHeight() / 2, resoSlider).withMargin(juce::FlexItem::Margin(bounds.getHeight() * .30, 0, 0, 0)));
 
        flexboxColumnThree.items = itemArrayColumnThree;
-       flexboxColumnThree.performLayout(bounds.removeFromLeft(bounds.getWidth()));
+       flexboxColumnThree.performLayout(bounds.removeFromLeft(bounds.getWidth() / 2));
        /* ============================================================================ */
+    
+    //fourth column of gui
+    juce::FlexBox flexboxColumnFour;
+    flexboxColumnFour.flexDirection = juce::FlexBox::Direction::column;
+    flexboxColumnFour.flexWrap = juce::FlexBox::Wrap::noWrap;
+    flexboxColumnFour.alignContent = juce::FlexBox::AlignContent::stretch;
+
+    juce::Array<juce::FlexItem> itemArrayColumnFour;
+    itemArrayColumnFour.add(juce::FlexItem(bounds.getWidth() / 6, bounds.getHeight() / 2, trimSlider).withMargin(juce::FlexItem::Margin(bounds.getHeight() * .30, 0, 0, 0)));
+
+    flexboxColumnFour.items = itemArrayColumnFour;
+    flexboxColumnFour.performLayout(bounds.removeFromLeft(bounds.getWidth()));
+    /* ============================================================================ */
 
        windowBorder.setBounds(AudioProcessorEditor::getWidth() * .01, AudioProcessorEditor::getHeight() * 0.04, AudioProcessorEditor::getWidth() * .98, AudioProcessorEditor::getHeight() * .90);
 }

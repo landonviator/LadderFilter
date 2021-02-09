@@ -19,6 +19,9 @@
 #define resoDelaySliderId "resonance"
 #define resoDelaySliderName "Resonance"
 
+#define trimSliderId "trim"
+#define trimSliderName "Trim"
+
 //==============================================================================
 /**
 */
@@ -62,12 +65,16 @@ public:
     void getStateInformation (juce::MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
+    float softClip(const float &input, const float &drive);
+    
     juce::AudioProcessorValueTreeState treeState;
     juce::AudioProcessorValueTreeState::ParameterLayout createParameterLayout();
 
 private:
     
+    const float piDivisor = 2 / M_PI;
     juce::dsp::LadderFilter<float> ladderProcessor;
+    juce::dsp::Gain<float> trimProcessor;
     
     //==============================================================================
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LadderFilterAudioProcessor)

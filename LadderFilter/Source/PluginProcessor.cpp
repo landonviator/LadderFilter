@@ -32,16 +32,18 @@ LadderFilterAudioProcessor::~LadderFilterAudioProcessor()
 juce::AudioProcessorValueTreeState::ParameterLayout LadderFilterAudioProcessor::createParameterLayout()
 {
     std::vector <std::unique_ptr<juce::RangedAudioParameter>> params;
-    params.reserve(3);
+    params.reserve(4);
     
     
-    auto driveParam = std::make_unique<juce::AudioParameterFloat>(driveSliderId, driveSliderName, 1, 10, 1);
+    auto driveParam = std::make_unique<juce::AudioParameterFloat>(driveSliderId, driveSliderName, 0.0, 10.0, 0.0);
     auto cutoffParam = std::make_unique<juce::AudioParameterInt>(cutoffSliderId, cutoffSliderName, 20, 20000, 750);
-    auto resoParam = std::make_unique<juce::AudioParameterFloat>(resoDelaySliderId, resoDelaySliderName, 0, 1, 0);
+    auto resoParam = std::make_unique<juce::AudioParameterFloat>(resoDelaySliderId, resoDelaySliderName, 0.0, 1.0, 0.5);
+    auto trimParam = std::make_unique<juce::AudioParameterFloat>(trimSliderId, trimSliderName, -36.0, 36.0, 0.0);
 
     params.push_back(std::move(driveParam));
     params.push_back(std::move(cutoffParam));
     params.push_back(std::move(resoParam));
+    params.push_back(std::move(trimParam));
     
     return { params.begin(), params.end() };
 }
@@ -117,6 +119,9 @@ void LadderFilterAudioProcessor::prepareToPlay (double sampleRate, int samplesPe
     spec.numChannels = getTotalNumOutputChannels();
     
     ladderProcessor.prepare(spec);
+    ladderProcessor.setDrive(1.0);
+    
+    trimProcessor.prepare(spec);
 }
 
 void LadderFilterAudioProcessor::releaseResources()
@@ -159,22 +164,38 @@ void LadderFilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
 
     for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
         buffer.clear (i, 0, buffer.getNumSamples());
-
-    juce::dsp::AudioBlock<float> audioBlock {buffer};
-        
+    
     auto* rawDrive = treeState.getRawParameterValue(driveSliderId);
     auto* rawCutoff = treeState.getRawParameterValue(cutoffSliderId);
     auto* rawReso = treeState.getRawParameterValue(resoDelaySliderId);
-        
-    std::cout << *rawDrive << std::endl;
-    std::cout << *rawCutoff << std::endl;
-    std::cout << *rawReso << std::endl;
+    auto* rawTrim = treeState.getRawParameterValue(trimSliderId);
 
-    ladderProcessor.setDrive(*rawDrive);
+    for (int channel = 0; channel < totalNumInputChannels; ++channel){
+        auto* outputData = buffer.getWritePointer (channel);
+        auto* inputData = buffer.getReadPointer(channel);
+        
+        for (int sample = 0; sample < buffer.getNumSamples(); sample++) {
+            outputData[sample] = softClip(inputData[sample], *rawDrive * 5);
+        }
+    }
+    
+    juce::dsp::AudioBlock<float> audioBlock {buffer};
+
     ladderProcessor.setCutoffFrequencyHz(*rawCutoff);
     ladderProcessor.setResonance(*rawReso);
+    
+    trimProcessor.setGainDecibels(*rawTrim);
         
     ladderProcessor.process(juce::dsp::ProcessContextReplacing<float> (audioBlock));
+    trimProcessor.process(juce::dsp::ProcessContextReplacing<float> (audioBlock));
+}
+
+float LadderFilterAudioProcessor::softClip(const float &input, const float &drive){
+    
+    //1.5f to account for drop in gain from the saturation initial state
+    //pow(10, (-1 * drive) * 0.04f) to account for the increase in gain when the drive goes up
+    
+    return piDivisor * atan(pow(10, drive * 0.05f) * input) * 1.5f * pow(10, (-1 * drive) * 0.04f);
 }
 
 //==============================================================================
