@@ -2,9 +2,12 @@
 
 ![alt text](https://github.com/landonviator/LadderFilter/blob/main/Ladder.png "The Ladder")
  
-Here's an implementation of JUCE's Ladder filter DSP module based on the iconic Moog Ladder filter design. 
-Patented in 1966, Moog's Ladder filter circuit is still one of the most important and defining elements of the Moog sound 
-even to this day and has been implemented into a 500 series form-factor hardware unit used by mixing and mastering engineers. 
+ 
+In working through JUCE's DSP modules, I've implemented the Ladder Filter module. JUCE's Ladder module is based on the iconic Moog Ladder filter design. Patented in 1966 and first used in the Minimoog Model D, Moog's Ladder filter circuit is still one of the most important and defining elements of the Moog sound even to this day and has been implemented into a 500 series form-factor hardware unit used by mixing and mastering engineers.
+
+Although the circuit can be implemented in various ways, its iconic "ladder" look comes from the cascade of two columns of transistors connected by capacitors.
+
+My plugin implementation contains four knobs: drive, cutoff, resonance, and trim. The drive knob controls a soft clipping algorithm based on a tanh function with up to 24 dB of boost, the cutoff controls a low-pass filter between the frequencies of 20 - 20k Hz, the resonance controls the boost of frequencies at the cutoff point, and the trim controls an output gain with a dB range of -36 to 36 dB. 
 
 ![alt text](https://d30pueezughrda.cloudfront.net/juce/JUCE_banner.png "JUCE")
 
