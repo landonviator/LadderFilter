@@ -35,9 +35,9 @@ juce::AudioProcessorValueTreeState::ParameterLayout LadderFilterAudioProcessor::
     params.reserve(3);
     
     
-    auto driveParam = std::make_unique<juce::AudioParameterInt>(driveSliderId, driveSliderName, 1, 10, 1);
-    auto cutoffParam = std::make_unique<juce::AudioParameterInt>(cutoffSliderId, cutoffSliderName, 20, 20000, 500);
-    auto resoParam = std::make_unique<juce::AudioParameterInt>(resoDelaySliderId, resoDelaySliderName, 0, 10, 0);
+    auto driveParam = std::make_unique<juce::AudioParameterFloat>(driveSliderId, driveSliderName, 1, 10, 1);
+    auto cutoffParam = std::make_unique<juce::AudioParameterInt>(cutoffSliderId, cutoffSliderName, 20, 20000, 750);
+    auto resoParam = std::make_unique<juce::AudioParameterFloat>(resoDelaySliderId, resoDelaySliderName, 0, 1, 0);
 
     params.push_back(std::move(driveParam));
     params.push_back(std::move(cutoffParam));
@@ -166,6 +166,10 @@ void LadderFilterAudioProcessor::processBlock (juce::AudioBuffer<float>& buffer,
     auto* rawCutoff = treeState.getRawParameterValue(cutoffSliderId);
     auto* rawReso = treeState.getRawParameterValue(resoDelaySliderId);
         
+    std::cout << *rawDrive << std::endl;
+    std::cout << *rawCutoff << std::endl;
+    std::cout << *rawReso << std::endl;
+
     ladderProcessor.setDrive(*rawDrive);
     ladderProcessor.setCutoffFrequencyHz(*rawCutoff);
     ladderProcessor.setResonance(*rawReso);

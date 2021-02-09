@@ -43,13 +43,19 @@ LadderFilterAudioProcessorEditor::LadderFilterAudioProcessorEditor (LadderFilter
         sliders[i]->setComponentEffect(&dialShadow);
         }
             
+    
+    driveSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, driveSliderId, driveSlider);
+    resoSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, resoDelaySliderId, resoSlider);
+    cutoffSliderAttach = std::make_unique<juce::AudioProcessorValueTreeState::SliderAttachment>(audioProcessor.treeState, cutoffSliderId, cutoffSlider);
+    
     driveSlider.setRange(1, 10, 0.25);
     driveSlider.setTextValueSuffix(" dB");
     cutoffSlider.setRange(20, 20000, 1);
     cutoffSlider.setTextValueSuffix(" Hz");
     cutoffSlider.setSkewFactorFromMidPoint(750);
-    resoSlider.setRange(0, 10, 0.25);
+    resoSlider.setRange(0, 1, 0.025);
     resoSlider.setTextValueSuffix(" dB");
+    
     
     for (auto i = 0; i < labels.size(); i++) {
         addAndMakeVisible(labels[i]);
