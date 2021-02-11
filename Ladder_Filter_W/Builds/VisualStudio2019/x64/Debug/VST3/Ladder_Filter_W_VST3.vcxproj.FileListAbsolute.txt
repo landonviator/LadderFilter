@@ -1,0 +1,2 @@
+C:\Users\lando\Documents\GitHub\LadderFilter\Ladder_Filter_W\Builds\VisualStudio2019\x64\Debug\VST3\Ladder_Filter_W.vst3
+C:\Users\lando\Documents\GitHub\LadderFilter\Ladder_Filter_W\Builds\VisualStudio2019\x64\Debug\VST3\Ladder_Filter_W.pdb

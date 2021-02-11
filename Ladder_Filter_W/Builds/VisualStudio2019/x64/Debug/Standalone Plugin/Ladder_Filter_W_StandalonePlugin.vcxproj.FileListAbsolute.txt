@@ -1,0 +1,2 @@
+C:\Users\lando\Documents\GitHub\LadderFilter\Ladder_Filter_W\Builds\VisualStudio2019\x64\Debug\Standalone Plugin\Ladder_Filter_W.exe
+C:\Users\lando\Documents\GitHub\LadderFilter\Ladder_Filter_W\Builds\VisualStudio2019\x64\Debug\Standalone Plugin\Ladder_Filter_W.pdb
